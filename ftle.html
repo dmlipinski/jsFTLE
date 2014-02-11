@@ -1,0 +1,92 @@
+<!doctype html>  
+<html lang="en">  
+
+<head>
+  <meta charset="utf-8"/>  
+  <title>Doug Lipinski - jsFTLE demonstration</title>  
+  <meta name="description" content="Interactive demonstration of FTLE computations using javascript and HTML5 canvas elements."/>  
+  <meta name="author" content="Doug Lipinski"/>
+  <!--[if lt IE 9]>  
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>  
+  <![endif]-->
+</head>  
+
+<body>
+
+  <h1>Interactive FTLE demonstration</h1>
+
+  <h4>Scroll down to use the interactive FTLE demo. <a href="#demo">&darr;</a></h4>
+
+  <div id="image1">
+  <img src="./images/lcs.jpg"><br>
+  <span style="font-size:80%">Forward and backward FTLE fields for a time-dependent double gyre.</span>
+  </div>
+
+  <h4>LCS and FTLEs</h4>
+
+  <p>
+  Lagrangian coherent structures (LCS) have recently become a popular technique for investigating flow structures and transport in complex fluid flows (see my <a href="../gallery/">Gallery</a> for several examples). LCS act as barriers to transport and therefore help to visualize and quantify transport, often providing insight that Eulerian techniques (such as plotting vorticity contours) cannot. Most commonly, LCS are defined as ridges in the finite time Lyapunov exponent (FTLE) field. The FTLE measures stretching in the flow and, intuitively, it is expected that there will be large stretching at the boundaries of coherent structures or distinct regions of the flow as particles in these distinct regions diverge over time.
+  </p>
+
+  <p>
+  The FTLE is computed by analyzing the flow map from an initial time t<sub>0</sub> to a final time t<sub>0</sub>+T for a given velocity field where T is called the "integration time". T may be positive or negative to reveal the forward or backward LCS which can also be thought of as repelling and attracting structures respectively. Once the flow map &Phi; is known, the gradient of the flow map is computed and the FTLE values &sigma; are computed based on the largest eigenvalue of the deformation tensor &Delta;.<br>
+  <img style="display:block;margin-left:auto;margin:1ex auto 0 auto;" src="images/ftle_eqn.png"><br>
+  In layman's terms, this essentially amounts to placing many passive particles in the flow, tracking them for a certain amount of time T, and then determining the amount of stretching between nearby particles.
+  </p>
+
+  <p>This page uses a javascript function to compute the finite time Lyapunov exponent (FTLE) fields for the time-dependent double gyre velocity field. The HTML5 canvas element is used to provide an interactive visualization of the particle advection and resulting FTLE fields. The velocity field for the double gyre is defined by the stream function:<br>
+  <img style="display:block;margin:1ex auto 0 auto;" src="images/vel_eqn.png"><br>
+  <img style="display:block;margin:0 auto;" src="images/vel2_eqn.png"><br>
+  </p>
+
+  <p>
+  The time-dependent double gyre consists of two counter-rotating gyres with a sinusoidal perturbation that enables fluid exchange between the gyres. FTLE computations reveal very clear ridges in the FTLE field of this flow. These ridges act as barriers to transport, outlining the regions in the flow that are transported between the two gyres.
+  </p>
+  
+  <p>This is an interactive page intended to demonstrate the effect of changing different parameters of the flow field and of the FTLE computation. As the computation runs, the particle positions are shown in the main window and the FTLE fields are eventually plotted in blue (forward FTLE) and red (backward FTLE). The FTLE results for each computation (along with the parameters used) will be displayed below the active computation window so you can scroll down to compare all your results. Reload this page to reset all parameters and clear the past results.
+  </p>
+
+  <h4>A few things worth trying:</h4>
+  <ul>
+	<li>Change the resolution (nx and ny are the number of grid in the x and y directions).</li>
+	<li>Change the value of &epsilon; (the size of the sinusoidal perturbation).</li>
+	<li>Change the value of T (the integration time for the FTLE computations).</li>
+	<li>Change &Delta;t to determine the necessary time step for good results (this also depends on A and &omega;). The script uses a 4<sup>th</sup> order Runge-Kutta time stepping scheme.</li>
+	<li>Incrementally change t<sub>0</sub> to observe how the FTLE ridges move in time. The period of the oscillation is 2&pi;/&omega; which is 10 using default settings. Try incrementing t<sub>0</sub> by 1 or 0.5.</li>
+	<li>Try choosing a small value of &Delta;t so that the particle advection process is more easily observable. This will let you directly observe the action of the flow on passive particles. I suggest trying nx=101, ny=51, &Delta;t=0.01. You can also increase T to observe to particle motion for a longer time.</li>
+  </ul>
+
+  <hr>
+
+  <p id="demo"><b>Interactive FTLE demonstration</b><br>
+  Enter the desired parameters below and click "Compute FTLE" to run the computation.</p>
+
+  <form id="parameters" action="javascript:computeLCS()">
+  <p>Flow parameters:<br>
+  A <input type="text" id="A" value="0.1">
+  &epsilon; <input type="text" id="epsilon" value="0.25">
+  &omega; <input type="text" id="omega" value="0.62831853">
+  </p>
+  <p>Number of points:<br>
+  nx <input type="text" id="nx" value="201">
+  ny <input type="text" id="ny" value="101">
+  </p>
+  <p>Time integration parameters:<br>
+  t<sub>0</sub> <input type="text" id="t0" value="0">
+  T <input type="text" id="T" value="12">
+  &Delta;t <input type="text" id="dt" value="1.0">
+  </p>
+
+
+  <p><input type="submit" value="Compute FTLE"> Status: <span id="status">Ready.</span></p>
+  </form>
+
+  <canvas id="main_canvas" width="640" height="480" style="border:dotted black 1px"></canvas>
+  <script id="jsFTLE" src="./jsFTLE.js"></script>
+
+  <p><b>Results:</b> results will be displayed below.</p>
+  <div id="old_results"></div>
+
+
+</body>
+</html>
